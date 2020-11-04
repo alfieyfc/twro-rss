@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: twro-rss-pvc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Mi
+
+---
+
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: twro-rss
+spec:
+  concurrencyPolicy: Allow
+  failedJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - env:
+            - name: LINE_TOKEN
+              value: __YOUR_TOKEN__
+            image: alfieyfc/twro-rss
+            imagePullPolicy: Always
+            name: twro-rss
+            volumeMounts:
+            - mountPath: /data
+              name: data
+          volumes:
+          - name: data
+            persistentVolumeClaim:
+              claimName: twro-rss-pvc
+  # Every 1, 6, 11, 16, 21, 26, 31, 36, 41, 46, 51 and 56th minute past every hour
+  # <Warn: Don't overdo it. We don't want to challenge TWRO website's loadbalancing.>
+  schedule: 1/5 * * * * 
+  successfulJobsHistoryLimit: 3
