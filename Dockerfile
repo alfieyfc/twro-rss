@@ -1,7 +1,7 @@
 FROM python:latest
 
 RUN pip install --upgrade pip \
-    && pip install requests
+    && pip install requests line-bot-sdk
 
 ENV TZ=Asia/Taipei
 
