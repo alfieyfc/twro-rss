@@ -38,13 +38,18 @@ def main():
     with open('/data/news_record.txt', 'r') as f:
       rec = f.readlines()
       if(len(rec) > 0):
-        latest = rec[0].split()[0]
+        for i in range(len(rec)):
+          current = rec[i].split()[0]
+          if int(latest) < int(current):
+            latest = current
 
     with open('/data/news_record.txt', 'w+') as f:
       for i in range(20):
         id = res['news'][i]['newsId']
+        print("id=" + str(id) + "; latest_record=" + str(latest))
         if int(id) <= int(latest):
-          break;
+          print("Not news...")
+          continue;
         
         s = int(res['news'][i]['publish_date'][6:19]) / 1000
         date = datetime.datetime.fromtimestamp(s)
@@ -55,6 +60,7 @@ def main():
 
         # Push Notification
         status_code = line_bot_api.broadcast(TextSendMessage(text=message))
+        print('Message broadcasted!')
         print('status_code = {}'.format(status_code))
         
         if(len(rec) > 0):
