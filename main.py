@@ -1,21 +1,17 @@
 # -*- coding: utf-8 -*-
+import requests, os, sys
 
-import requests
-import importlib
-import sys
-importlib.reload(sys)
+from linebot import (
+    LineBotApi, WebhookHandler
+)
+from linebot.exceptions import (
+    InvalidSignatureError
+)
+from linebot.models import (
+    MessageEvent, TextMessage, TextSendMessage,
+)
 
-URL = 'https://notify-api.line.me/api/notify'
-  
-def send_message(token, msg, img=None):
-    """Send a LINE Notify message (with or without an image)."""
-    headers = {'Authorization': 'Bearer ' + token}
-    payload = {'message': msg}
-    files = {'imageFile': open(img, 'rb')} if img else None
-    r = requests.post(URL, headers=headers, params=payload, files=files)
-    if files:
-        files['imageFile'].close()
-    return r.status_code
+URL = 'https://api.line.me/v2/bot/message/broadcast'
   
 def main():
     import json
@@ -26,6 +22,8 @@ def main():
         token = os.environ['LINE_TOKEN']
     except KeyError:
         sys.exit('LINE_TOKEN is not defined!')
+
+    line_bot_api = LineBotApi(token)
 
     parser = argparse.ArgumentParser(
         description='Send a LINE Notify message, possibly with an image.')
@@ -56,7 +54,7 @@ def main():
         message += "\nhttps://ro.gnjoy.com.tw/notice/notice_view.aspx?id=" + str(res['news'][i]['newsId'])
 
         # Push Notification
-        status_code = send_message(token, message, args.img_file)
+        status_code = line_bot_api.broadcast(TextSendMessage(text=message))
         print('status_code = {}'.format(status_code))
         
         if(len(rec) > 0):
