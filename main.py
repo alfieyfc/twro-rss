@@ -74,8 +74,12 @@ def main():
           entry = str(res['news'][i]['newsId']).ljust(6) + str(date).ljust(24) + res['news'][i]['newsTitle']
           f.write(entry + "\n")
           # broadcast news
-          message = "仙境傳說公告\n" + res['news'][i]['newsTitle'] + "\n" + str(date)
-          message += "\nhttps://ro.gnjoy.com.tw/notice/notice_view.aspx?id=" + str(res['news'][i]['newsId'])
+          if(res['news'][i]['url']):
+            uri = res['news'][i]['url']
+          else:
+            uri = 'https://ro.gnjoy.com.tw/notice/notice_view.aspx?id='+ str(res['news'][i]['newsId'])
+          message = "仙境傳說公告\n" + res['news'][i]['newsTitle'] + "\n" + str(date) + "\n"
+          message += uri 
           # Push Notification
           status_code = line_bot_api.broadcast(TextSendMessage(text=message))
           print('Message broadcasted!')
@@ -100,8 +104,12 @@ def main():
             entry = str(res['news'][i]['newsId']).ljust(6) + str(date).ljust(24) + res['news'][i]['newsTitle']
             f.write(entry + "\n")
             # broadcast news
-            message = "仙境傳說公告\n" + res['news'][i]['newsTitle'] + "\n" + str(date)
-            message += "\nhttps://ro.gnjoy.com.tw/notice/notice_view.aspx?id=" + str(res['news'][i]['newsId'])
+            if(res['news'][i]['url']):
+              uri = res['news'][i]['url']
+            else:
+              uri = 'https://ro.gnjoy.com.tw/notice/notice_view.aspx?id='+ str(res['news'][i]['newsId'])
+            message = "仙境傳說公告\n" + res['news'][i]['newsTitle'] + "\n" + str(date) + "\n"
+            message += uri
             # Push Notification
             status_code = line_bot_api.broadcast(TextSendMessage(text=message))
             print('Message broadcasted!')
